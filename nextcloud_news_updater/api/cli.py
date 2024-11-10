@@ -1,4 +1,4 @@
-from subprocess import check_output, CalledProcessError, STDOUT
+from subprocess import check_output, CalledProcessError, PIPE
 from typing import List, Any
 
 from nextcloud_news_updater.api.api import Api, Feed
@@ -9,7 +9,7 @@ from nextcloud_news_updater.config import Config
 
 class Cli:
     def run(self, commands: List[str]) -> bytes:
-        return check_output(commands, stderr=STDOUT)
+        return check_output(commands, stderr=PIPE)
 
 
 class CliApi(Api):
@@ -81,7 +81,7 @@ class CliUpdateThread(UpdateThread):
             self.logger.error("Command '%s' returned %d with output: '%s'" %
                               (' '. join(command),
                                e.returncode,
-                               e.output.decode().strip()))
+                               e.stderr.decode().strip()))
 
     def update_feed(self, feed: Feed) -> None:
         command = self.api.update_feed_command + [str(feed.feed_id),
